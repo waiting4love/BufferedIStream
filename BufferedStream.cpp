@@ -18,7 +18,7 @@ BufferedStream::BufferedStream(IStream* stm, ULONG bufferSize)
 HRESULT BufferedStream::SyncBuffer(bool reRead)
 {
 	HRESULT hres = S_OK;
-	// Èç¹ûÓĞ¸Ä¶¯£¬¾ÍĞ´Èë
+	// å¦‚æœæœ‰æ”¹åŠ¨ï¼Œå°±å†™å…¥
 	if (m_bModified) {
 		ULARGE_INTEGER tmp1;
 		ULONG tmp2;
@@ -28,7 +28,7 @@ HRESULT BufferedStream::SyncBuffer(bool reRead)
 		if (FAILED(hres)) return hres;
 		m_bModified = false;
 	}
-	// °´²ÎÊı¾ö¶¨¶ÁÈëÊı¾İµ½ÄÚ´æ
+	// æŒ‰å‚æ•°å†³å®šè¯»å…¥æ•°æ®åˆ°å†…å­˜
 	if (reRead) {
 		ULONG read = 0;
 		hres = m_pStm->Seek(*(PLARGE_INTEGER)&m_nStmPos, STREAM_SEEK_SET, (PULARGE_INTEGER)&m_nBufStartPos);
@@ -88,7 +88,7 @@ HRESULT __stdcall BufferedStream::Read(void* pv, ULONG cb, ULONG* pcbRead)
 	if (pcbRead) *pcbRead = 0;
 	ULONG result = 0;
 
-	// Ì«´ó£¬·ÅÆú»º´æ
+	// å¤ªå¤§ï¼Œæ”¾å¼ƒç¼“å­˜
 	if (cb >= m_nBufferSize) {
 		HRESULT hres = SyncBuffer(false);
 		if (FAILED(hres)) return hres;
@@ -96,18 +96,18 @@ HRESULT __stdcall BufferedStream::Read(void* pv, ULONG cb, ULONG* pcbRead)
 		if (FAILED(hres)) return hres;
 	}
 	else {
-		// Èç¹ûµ±Ç°»º´æ²»°üº¬£¬Ôò¶ÁÈë»º´æ
+		// å¦‚æœå½“å‰ç¼“å­˜ä¸åŒ…å«ï¼Œåˆ™è¯»å…¥ç¼“å­˜
 		if (m_nBufStartPos > m_nStmPos || m_nStmPos + cb > m_nBufEndPos) {
 			HRESULT hres = SyncBuffer(true);
 			if (FAILED(hres)) return hres;
 		}
 
-		// µÃµ½¶Á³öµÄÊı¾İÁ¿
+		// å¾—åˆ°è¯»å‡ºçš„æ•°æ®é‡
 		result = cb < ULONG(m_nBufEndPos - m_nStmPos)? cb : ULONG(m_nBufEndPos - m_nStmPos);
 		
-		// Êä³öµÄ»º´æ¶ÔÓ¦Î»ÖÃ
+		// è¾“å‡ºçš„ç¼“å­˜å¯¹åº”ä½ç½®
 		auto pSrc = m_Buffer + (m_nStmPos - m_nBufStartPos);
-		// Ğ´Èë£¬¿¼ÂÇ¶ÔÆë
+		// å†™å…¥ï¼Œè€ƒè™‘å¯¹é½
 		switch (result)
 		{
 			case sizeof(BYTE) :
@@ -150,7 +150,7 @@ HRESULT __stdcall BufferedStream::Write(const void* pv, ULONG cb, ULONG* pcbWrit
 		}
 		result = cb;
 		auto pDest = m_Buffer + (m_nStmPos - m_nBufStartPos);
-		// Ğ´Èë£¬¿¼ÂÇ¶ÔÆë
+		// å†™å…¥ï¼Œè€ƒè™‘å¯¹é½
 		switch (result)
 		{
 			case sizeof(BYTE) :
@@ -225,7 +225,7 @@ HRESULT __stdcall BufferedStream::SetSize(ULARGE_INTEGER libNewSize)
 
 HRESULT __stdcall BufferedStream::CopyTo(IStream* pstm, ULARGE_INTEGER cb, ULARGE_INTEGER* pcbRead, ULARGE_INTEGER* pcbWritten)
 {
-	// ÒÔ4KÎªµ¥Î»¸´ÖÆ£¬¿ÉÒÔÀûÓÃµ½»º´æ»úÖÆ
+	// ä»¥4Kä¸ºå•ä½å¤åˆ¶ï¼Œå¯ä»¥åˆ©ç”¨åˆ°ç¼“å­˜æœºåˆ¶
 	const ULONG BUFSIZE = 4096;
 	char buff[BUFSIZE];
 	ULONGLONG total_read = 0, total_written = 0;

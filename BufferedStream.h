@@ -15,7 +15,7 @@ private:
 public:
 	~BufferedStream();
 	static void Create(IStream* pstmSource, IStream** ppstmBuffered, ULONG bufferSize=32*1024);
-	// Í¨¹ý IStream ¼Ì³Ð
+	// é€šè¿‡ IStream ç»§æ‰¿
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override;
 	virtual ULONG __stdcall AddRef(void) override;
 	virtual ULONG __stdcall Release(void) override;
