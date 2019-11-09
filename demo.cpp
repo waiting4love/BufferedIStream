@@ -14,7 +14,7 @@ int main()
 	{
 		auto file1 = _T(R"(C:\Qt\Qt5.12.2\InstallationLog.txt)");
 		auto file2 = _T(R"(C:\usr\tmp\tmp.txt)");
-		auto file = file2;
+		auto file = file1;
 		// TEST BUFFERED
 		{
 			std::cout << "Buffered===================" << std::endl;

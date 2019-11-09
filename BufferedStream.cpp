@@ -88,9 +88,11 @@ HRESULT __stdcall BufferedStream::Read(void* pv, ULONG cb, ULONG* pcbRead)
 	if (pcbRead) *pcbRead = 0;
 	ULONG result = 0;
 
+	HRESULT hres = S_OK;
+
 	// 太大，放弃缓存
 	if (cb >= m_nBufferSize) {
-		HRESULT hres = SyncBuffer(false);
+		hres = SyncBuffer(false);
 		if (FAILED(hres)) return hres;
 		hres = m_pStm->Read(pv, cb, &result);
 		if (FAILED(hres)) return hres;
@@ -98,7 +100,7 @@ HRESULT __stdcall BufferedStream::Read(void* pv, ULONG cb, ULONG* pcbRead)
 	else {
 		// 如果当前缓存不包含，则读入缓存
 		if (m_nBufStartPos > m_nStmPos || m_nStmPos + cb > m_nBufEndPos) {
-			HRESULT hres = SyncBuffer(true);
+			hres = SyncBuffer(true);
 			if (FAILED(hres)) return hres;
 		}
 
@@ -129,15 +131,16 @@ HRESULT __stdcall BufferedStream::Read(void* pv, ULONG cb, ULONG* pcbRead)
 	}
 	m_nStmPos += result;
 	if (pcbRead) *pcbRead = result;
-	return S_OK;
+	return hres;
 }
 
 HRESULT __stdcall BufferedStream::Write(const void* pv, ULONG cb, ULONG* pcbWritten)
 {
 	if (pcbWritten) *pcbWritten = 0;
+	HRESULT hres = S_OK;
 	ULONG result = 0;
 	if (cb >= m_nBufferSize) {
-		HRESULT hres = SyncBuffer(false);
+		hres = SyncBuffer(false);
 		if (FAILED(hres)) return hres;
 		hres = m_pStm->Write(pv, cb, &result);
 		if (FAILED(hres)) return hres;
@@ -145,7 +148,7 @@ HRESULT __stdcall BufferedStream::Write(const void* pv, ULONG cb, ULONG* pcbWrit
 	}
 	else {
 		if (m_nBufStartPos > m_nStmPos || m_nStmPos + cb > m_nBufStartPos + m_nBufferSize) {
-			HRESULT hres = SyncBuffer(true);
+			hres = SyncBuffer(true);
 			if (FAILED(hres)) return hres;
 		}
 		result = cb;
@@ -173,7 +176,7 @@ HRESULT __stdcall BufferedStream::Write(const void* pv, ULONG cb, ULONG* pcbWrit
 		m_nStmPos += result;
 		if (m_nStmPos > m_nBufEndPos) m_nBufEndPos = m_nStmPos;
 	}
-	return S_OK;
+	return hres;
 }
 
 HRESULT __stdcall BufferedStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER* plibNewPosition)
